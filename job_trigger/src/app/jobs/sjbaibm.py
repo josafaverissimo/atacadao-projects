@@ -3,7 +3,10 @@ from time import sleep
 
 
 class Sjbaibm:
-    def __init__(self):
+    def __init__(self, sjbou02):
+        self.sjbou02 = sjbou02
+        self.id = "SJBAIBM"
+        self.description = "PROCESSA ALTERACAO DE PRECO SASBU07 PARCIAL"
         self.option = "S"
         self.commands = [
             {
@@ -26,99 +29,47 @@ class Sjbaibm:
             }
         ]
 
+    def get_id(self):
+        return self.id
+
+    def get_description(self):
+        return self.description
+
     def show_commands(self):
-        line = 9
+        line = 0
         for command in self.commands:
-            helpers.move_cursor(line, 5)
-
-            row = f'{command["sequence"]} {command["function"]} {command["description"]}'
-            blanks = 40 - len(command["description"])
-            row += " " * blanks + command["printer"]
-            print(row)
+            self.sjbou02.insert_job_execution_row(
+                line,
+                command["sequence"],
+                command["function"],
+                command["description"],
+                command["printer"]
+            )
 
             line += 1
-
-    def show_parameters(self):
-        parameters = [
-            {
-                "name": "Fil1",
-                "value": "273"
-            },
-            {
-                "name": "Fil2",
-                "value": "0"
-            },
-            {
-                "name": "Num1",
-                "value": "0,0000"
-            },
-            {
-                "name": "Num2",
-                "value": "0,0000"
-            },
-            {
-                "name": "Int1",
-                "value": "0"
-            },
-            {
-                "name": "Int2",
-                "value": "0"
-            }
-        ]
-        line = 16
-
-        for parameter in parameters:
-            helpers.move_cursor(line, 60)
-            blanks = 12 - len(parameter['value'])
-            row = f"| {parameter['name']}:"
-            row += " " * blanks + parameter['value']
-            print(row)
-            line += 1
-
-    def detail_command(self, command):
-        helpers.move_cursor(16, 3)
-        print(f"FUNCAO: <{command['function']}> {command['description']}")
-
-        helpers.move_cursor(17, 3)
-        print(f"SEQ...: {command['sequence']}")
-
-        helpers.move_cursor(20, 3)
-        print("-" * 57)
-
-    def confirm_execution(self):
-        helpers.move_cursor(21, 3)
-        print("DESEJA EXECUTAR O COMANDO ACIMA (?): [ ] (S=Sim / N=Nao)")
-
-        helpers.move_cursor(21, 41)
-        self.opt = str(input())
-
-    def clear_detail(self):
-        helpers.move_cursor(16, 3)
-        print(" " * 57)
-        helpers.move_cursor(17, 3)
-        print(" " * 10)
 
     def execute(self):
-        line = 9
+        self.show_commands()
+        line = 0
+
         for command in self.commands:
-            self.clear_detail()
-            self.detail_command(command)
-            self.show_parameters()
-            self.confirm_execution()
+            self.sjbou02.clear_command_execution_description()
+            self.sjbou02.set_command_execution_description_function(
+                command["function"],
+                command["description"],
+                command["sequence"]
+            )
 
-            if self.option == "S":
-                self.clear_detail()
+            self.sjbou02.set_parameters("273", "0", "0,0000", "0,0000", "0", "0")
 
-                helpers.move_cursor(16, 28)
-                print("***  A G U A R D E  ***")
+            confirmation = self.sjbou02.get_confirmation_execution()
 
-                helpers.move_cursor(line, 58)
-                print("EM PROCESSO")
-
-                helpers.move_cursor(22, 80)
+            if confirmation == "S":
+                self.sjbou02.set_job_execution_status(line)
+                self.sjbou02.wait_command_execution()
                 sleep(6)
+                self.sjbou02.set_job_execution_time(line, "00:00:12")
 
                 line += 1
-            else:
-                return
-        return
+            elif confirmation == "N":
+                break
