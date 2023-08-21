@@ -6,6 +6,3 @@ os.system("clear")
 screen.init()
 
 os.system("clear")
-
-
-
