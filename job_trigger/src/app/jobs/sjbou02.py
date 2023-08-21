@@ -291,7 +291,6 @@ class Sjbou02:
 
         self.load_job()
 
-
     def get_screen(self) -> None:
         self.curses.main_window_borders()
         self.screen_header()
@@ -304,10 +303,6 @@ class Sjbou02:
 
         self.get_user_input()
 
-        # self.insert_confirm_execution()
-        # self.set_parameters("273", "0", "0,0000", "0,0000", "0", "0")
-
-        self.curses.get_stdscr().getch()
         self.curses.end()
 
     def screen_confirm_execution_rectangle(self):
