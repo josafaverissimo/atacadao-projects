@@ -3,7 +3,7 @@ Repositório que contém projetos feitos por CPD's
 
 ## Projects
 
-### job_triggers
+### job_trigger
 
 Replica do sjbou02
 
